@@ -1,0 +1,4 @@
+*.txt
+*.docx
+~$*.docx
+.env
