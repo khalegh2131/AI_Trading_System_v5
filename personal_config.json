@@ -1,0 +1,11 @@
+{
+    "assets": ["BTC/USDT", "EUR/USD"],
+    "oanda_account": "your_account",
+    "modules": {
+        "utils": ["data_patch_final", "ml_patch_final", "recovery_patch_final", "news_patch_final", "position_patch_final"],
+        "strategies": ["rsi_strategy"]
+    },
+    "v2ray": {
+        "backup_servers": ["server1:443", "server2:443"]
+    }
+}
