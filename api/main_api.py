@@ -39,6 +39,7 @@ class TradingAPI:
         self.config = self._load_config(config_path)
         self.logger = logging.getLogger(__name__)
         self.orchestrator = None
+        self.orchestrator_task = None
         self.is_running = False
         
     def _load_config(self, config_path: str) -> Dict:
@@ -71,8 +72,8 @@ class TradingAPI:
             from utils.Orchestrator_zero_gap import OrchestratorZeroGap
             self.orchestrator = OrchestratorZeroGap(self.config)
             
-            # Start orchestrator
-            asyncio.create_task(self.orchestrator.run())
+            # Start orchestrator and store task reference
+            self.orchestrator_task = asyncio.create_task(self.orchestrator.run())
             self.is_running = True
             
             self.logger.info("Trading system started successfully")

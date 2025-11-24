@@ -105,27 +105,27 @@ class StrategyOptimizer:
         
         return combinations
     
-    async def bayesian_optimize(self, strategy_class, data, param_bounds: Dict,
-                                n_iterations: int = 50, metric: str = 'sharpe_ratio') -> Tuple[Dict, float]:
-        """Optimize using Bayesian optimization (simplified version).
+    async def random_search(self, strategy_class, data, param_bounds: Dict,
+                           n_iterations: int = 50, metric: str = 'sharpe_ratio') -> Tuple[Dict, float]:
+        """Optimize using random search within parameter bounds.
         
         Args:
             strategy_class: Strategy class to optimize
             data: Historical data for backtesting
             param_bounds: Dictionary of parameters and their (min, max) bounds
-            n_iterations: Number of optimization iterations
+            n_iterations: Number of random samples to test
             metric: Metric to optimize
             
         Returns:
             Tuple of (best_parameters, best_score)
         """
         try:
-            self.logger.info(f"Starting Bayesian optimization with {n_iterations} iterations")
+            self.logger.info(f"Starting random search with {n_iterations} iterations")
             
             best_score = float('-inf')
             best_params = {}
             
-            # Initialize with random samples
+            # Test random parameter samples
             for i in range(n_iterations):
                 # Sample random parameters within bounds
                 params = {
@@ -158,11 +158,11 @@ class StrategyOptimizer:
                     continue
             
             self.best_params = best_params
-            self.logger.info(f"Bayesian optimization complete. Best {metric}: {best_score:.4f}")
+            self.logger.info(f"Random search complete. Best {metric}: {best_score:.4f}")
             return best_params, best_score
             
         except Exception as e:
-            self.logger.error(f"Bayesian optimization error: {e}")
+            self.logger.error(f"Random search error: {e}")
             raise
     
     def get_best_params(self) -> Dict:

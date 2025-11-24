@@ -80,11 +80,16 @@ class KlineDownloader:
             
             while current_ts < end_ts:
                 try:
-                    klines = await exchange.fetch_ohlcv(
-                        symbol,
-                        timeframe=interval,
-                        since=current_ts,
-                        limit=1000
+                    # ccxt is synchronous, run in executor for async context
+                    loop = asyncio.get_event_loop()
+                    klines = await loop.run_in_executor(
+                        None,
+                        lambda: exchange.fetch_ohlcv(
+                            symbol,
+                            timeframe=interval,
+                            since=current_ts,
+                            limit=1000
+                        )
                     )
                     
                     if not klines:

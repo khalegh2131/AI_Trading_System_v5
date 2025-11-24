@@ -21,13 +21,15 @@ class Backtester:
         self.trades = []
         self.logger = logging.getLogger(__name__)
         
-    async def run(self, strategy, data: pd.DataFrame, initial_capital: float = 10000.0) -> Dict:
+    async def run(self, strategy, data: pd.DataFrame, initial_capital: float = 10000.0, 
+                  timeframe: str = '1m') -> Dict:
         """Run backtest on given strategy and data.
         
         Args:
             strategy: Trading strategy instance with generate_signal method
             data: Historical market data DataFrame
             initial_capital: Starting capital for backtest
+            timeframe: Data timeframe for proper annualization (1m, 5m, 1h, 1d, etc.)
             
         Returns:
             Dictionary containing backtest results and metrics
@@ -77,7 +79,7 @@ class Backtester:
             
             # Calculate metrics
             final_capital = capital + (position * data.iloc[-1]['close'] if position > 0 else 0)
-            self.results = self._calculate_metrics(initial_capital, final_capital, equity_curve)
+            self.results = self._calculate_metrics(initial_capital, final_capital, equity_curve, timeframe)
             
             self.logger.info(f"Backtest completed. Final capital: ${final_capital:.2f}")
             return self.results
@@ -105,13 +107,15 @@ class Backtester:
             self.logger.warning(f"Signal generation error: {e}")
             return 'hold'
     
-    def _calculate_metrics(self, initial: float, final: float, equity_curve: List[float]) -> Dict:
+    def _calculate_metrics(self, initial: float, final: float, equity_curve: List[float], 
+                          timeframe: str = '1d') -> Dict:
         """Calculate performance metrics.
         
         Args:
             initial: Initial capital
             final: Final capital
             equity_curve: List of equity values over time
+            timeframe: Data timeframe for proper annualization
             
         Returns:
             Dictionary of performance metrics
@@ -122,7 +126,19 @@ class Backtester:
         equity_array = np.array(equity_curve)
         returns = np.diff(equity_array) / equity_array[:-1]
         
-        sharpe_ratio = np.mean(returns) / np.std(returns) * np.sqrt(252) if np.std(returns) > 0 else 0
+        # Calculate annualization factor based on timeframe
+        timeframe_map = {
+            '1m': 525600,    # minutes per year
+            '5m': 105120,    # 5-minute periods per year
+            '15m': 35040,    # 15-minute periods per year
+            '1h': 8760,      # hours per year
+            '4h': 2190,      # 4-hour periods per year
+            '1d': 365,       # days per year
+            '1w': 52         # weeks per year
+        }
+        annualization_factor = np.sqrt(timeframe_map.get(timeframe, 252))
+        
+        sharpe_ratio = np.mean(returns) / np.std(returns) * annualization_factor if np.std(returns) > 0 else 0
         max_drawdown = self._calculate_max_drawdown(equity_array)
         
         winning_trades = [t for t in self.trades if t.get('pnl', 0) > 0]

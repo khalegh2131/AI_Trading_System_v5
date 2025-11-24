@@ -21,6 +21,7 @@ class Dashboard:
         self.logger = logging.getLogger(__name__)
         self.running = False
         self.orchestrator = None
+        self.orchestrator_task = None
         
     def _load_config(self, config_path: str) -> Dict:
         """Load configuration from file.
@@ -112,8 +113,8 @@ class Dashboard:
             from utils.Orchestrator_zero_gap import OrchestratorZeroGap
             self.orchestrator = OrchestratorZeroGap(self.config)
             
-            # Start in background
-            asyncio.create_task(self.orchestrator.run())
+            # Start in background and store task reference
+            self.orchestrator_task = asyncio.create_task(self.orchestrator.run())
             self.running = True
             
             print("✓ Trading system started successfully!")
