@@ -1,7 +1,0 @@
-2025-11-24 14:01:36,796 - __main__ - INFO - ============================================================
-2025-11-24 14:01:36,796 - __main__ - INFO - AI Trading System v5.0.0
-2025-11-24 14:01:36,796 - __main__ - INFO - ============================================================
-2025-11-24 14:01:36,796 - __main__ - INFO - Mode: Backtest (rsi_strategy on BTC/USDT)
-2025-11-24 14:01:36,797 - __main__ - INFO - Running backtest: rsi_strategy on BTC/USDT
-2025-11-24 14:01:37,052 - __main__ - INFO - Generated sample data: 7200 rows
-2025-11-24 14:01:37,052 - __main__ - INFO - Backtest completed (sample data used)
